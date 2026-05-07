@@ -8,13 +8,15 @@
 </div>
 
 ## Changelog
-<details open>
 
-<summary><strong>2025-11-04</strong></summary>
+<strong>2026-05-07</strong>
 
-* Adding **GRPO-Guard** 🔥🔥.
+- 🚀 Flow-GRPO is now supported in [verl-omni](https://github.com/verl-project/verl-omni)!
 
-</details>
+<strong>2025-11-04</strong>
+
+- 🚀 Adding **GRPO-Guard**.
+
 
 <details>
 <summary><strong>Update History</strong></summary>
