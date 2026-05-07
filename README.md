@@ -8,16 +8,18 @@
 </div>
 
 ## Changelog
-<details open>
 
-<summary><strong>2025-11-04</strong></summary>
+<strong>2026-05-07</strong>
 
-* Adding **GRPO-Guard** 🔥🔥.
+* 🚀 Flow-GRPO is now supported in [verl-omni](https://github.com/verl-project/verl-omni)! This provides a verl-style training framework for Flow-GRPO users.
 
-</details>
 
 <details>
 <summary><strong>Update History</strong></summary>
+
+** 2025-11-04**
+
+* 🚀 Adding **GRPO-Guard**.
 
 **2025-11-04**
 * Adding support for [Bagel-7B](https://huggingface.co/ByteDance-Seed/BAGEL-7B-MoT).
