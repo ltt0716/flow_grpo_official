@@ -1,0 +1,18 @@
+### branch & commit
+main
+9b9d0451e4d740d43790d0a1cfc248e39382e792
+
+### working tree 改动(你本地改了哪些文件)
+?? debug/reports/
+
+### 相对上游/远程的差异 commit
+9b9d045 @ Add RUNBOOK.md: 训练机部署步骤(clone/装依赖/登录/启动/排错) @
+953c97b @ Add .gitattributes: 强制 *.sh 用 LF (Windows->Linux 防 ^M) @
+9b29df0 @ Add debug/report_error.sh: 训练报错一键打包推到 git
+879042c Merge pull request #241 from GongyeLiu/docs/add-verl-omni-support
+bd7ea4b Update README.md
+0c331eb Update README.md
+637f0b4 Update README.md
+9745241 Merge pull request #175 from jingw193/main
+518e155 Merge branch 'main' into main
+99809c5 Merge pull request #178 from GongyeLiu/flow_grpo-bagel
