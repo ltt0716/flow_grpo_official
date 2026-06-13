@@ -66,11 +66,41 @@ huggingface-cli whoami    # 显示你的用户名 = 登录成功
 
 ---
 
+## 第 3.5 步:解决「连不上 HuggingFace」(国内集群必看)
+
+国内训练机/k8s pod 常常出网受限,直连 huggingface.co 会报
+`OSError: [Errno 101] Network is unreachable`。**走 HF 国内镜像(方案 A)。**
+
+**先测连通性**,决定能不能走镜像:
+```bash
+curl -sI --connect-timeout 5 https://hf-mirror.com | head -1   # 国内镜像
+curl -sI --connect-timeout 5 https://huggingface.co | head -1  # 官方
+```
+- 镜像返回 `HTTP/.. 200/301` → 走下面方案 A
+- 两条都超时 → 机器完全不出网,需在有网机器下好模型再 scp 过来(方案 B,见文末)
+
+### 方案 A:走 HF 镜像 + 预下载模型
+```bash
+export HF_ENDPOINT=https://hf-mirror.com   # 关键:指向国内镜像
+export HF_TOKEN=<你的HF token>             # SD3.5 是 gated,要带 token
+
+# 单进程先把 3 个模型下全(别让 4 个 rank 同时抢下载)
+huggingface-cli download stabilityai/stable-diffusion-3.5-medium
+huggingface-cli download yuvalkirstain/PickScore_v1
+huggingface-cli download laion/CLIP-ViT-H-14-laion2B-s32B-b79K
+```
+
+> ⚠️ `HF_ENDPOINT` 必须在**启动训练的同一个 shell** 里 export,否则训练进程仍去连官方。
+> 建议把这两行 export 也写进 `~/.bashrc`,一劳永逸。
+
+---
+
 ## 第 4 步:起飞前检查
 
 ```bash
 nvidia-smi                # 确认 4 张卡空闲、各 80G
 df -h ~                   # 确认家目录有 30–40G 下模型
+export HF_ENDPOINT=https://hf-mirror.com   # 同上,确保训练进程也走镜像
 export WANDB_MODE=offline # 第一次离线,免得卡在 wandb 登录
 mkdir -p debug
 ```
@@ -124,3 +154,27 @@ bash debug/report_error.sh
 - checkpoint 在 `logs/pickscore/sd3.5-M/`(已被 .gitignore,不会误推回仓库)。
 - 想做"文字渲染"任务再装 paddleocr 用 OCR config;想移植手写版的 credit-assignment
   探索(early/late 逐步权重)到官方 `stat_tracking.py`,届时再说。
+
+---
+
+## 附:方案 B —— 机器完全不出网(连镜像也不通)
+
+在**有网的机器**(本地电脑 / 能上 HF 的跳板)下好模型,再传到训练机:
+
+```bash
+# ① 有网机器上下载(用镜像加速)
+export HF_ENDPOINT=https://hf-mirror.com
+huggingface-cli download stabilityai/stable-diffusion-3.5-medium --local-dir sd35
+huggingface-cli download yuvalkirstain/PickScore_v1 --local-dir pickscore
+huggingface-cli download laion/CLIP-ViT-H-14-laion2B-s32B-b79K --local-dir cliph
+
+# ② 打包传到训练机(SD3.5 约 20G,耐心等)
+scp -r sd35 pickscore cliph 用户@训练机:/数据盘/models/
+```
+
+训练机上有两种用法:
+- **填进 HF 缓存**:把文件放到 `$HF_HOME/hub/` 对应目录,代码按原仓库名就能从缓存读;
+- **改成本地路径**(更简单):在 `config/grpo.py` 的 `pickscore_sd3_4gpu` 里把
+  `config.pretrained.model` 改成 `/数据盘/models/sd35`,reward 同理改 scorer 里的路径。
+
+> 方案 B 较繁琐,仅在「连 hf-mirror.com 都不通」时才用。优先试方案 A。
