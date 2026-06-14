@@ -1,0 +1,405 @@
+W0613 22:29:02.441423 140457347708736 other.py:335] Detected kernel version 5.4.119, which is below the recommended minimum of 5.5.0; this can cause the process to hang. It is recommended to upgrade the kernel to the minimum version or higher.
+wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
+wandb: Tracking run with wandb version 0.18.7
+wandb: W&B syncing is set to `offline` in this directory.  
+wandb: Run `wandb online` or set WANDB_MODE=online to enable cloud syncing.
+I0613 22:29:04.609142 140457347708736 train_sd3.py:371] 
+activation_checkpointing: false
+allow_tf32: true
+dataset: /opt/project/p/codes/flow_grpo_official/dataset/pickscore
+debug: false
+eval_freq: 60
+fsdp_optimizer_offload: false
+logdir: logs
+mixed_precision: fp16
+num_checkpoint_limit: 5
+num_epochs: 100000
+per_prompt_stat_tracking: true
+pretrained:
+  model: stabilityai/stable-diffusion-3.5-medium
+  revision: main
+prompt_fn: general_ocr
+prompt_fn_kwargs: {}
+resolution: 512
+resume_from: null
+reward_fn:
+  pickscore: 1.0
+run_name: 2026.06.13_22.29.02
+sample:
+  batch_size: 8
+  eval_guidance_scale: 4.5
+  eval_num_steps: 40
+  global_std: true
+  guidance_scale: 4.5
+  noise_level: 0.7
+  num_batches_per_epoch: 8
+  num_image_per_prompt: 16
+  num_steps: 10
+  same_latent: false
+  sde_window_range: !!python/tuple
+  - 0
+  - 10
+  sde_window_size: 2
+  test_batch_size: 16
+  train_batch_size: 8
+save_dir: logs/pickscore/sd3.5-M
+save_freq: 60
+seed: 42
+train:
+  adam_beta1: 0.9
+  adam_beta2: 0.999
+  adam_epsilon: 1.0e-08
+  adam_weight_decay: 0.0001
+  adv_clip_max: 5
+  batch_size: 8
+  beta: 0.01
+  cfg: true
+  clip_range: 0.0001
+  clip_range_gt: 0.0001
+  clip_range_lt: 0.0001
+  ema: true
+  gradient_accumulation_steps: 4
+  learning_rate: 0.0003
+  lora_path: null
+  max_grad_norm: 1.0
+  num_inner_epochs: 1
+  timestep_fraction: 0.99
+  timestep_shift: 3.0
+  use_8bit_adam: false
+use_lora: true
+
+Couldn't connect to the Hub: (MaxRetryError("HTTPSConnectionPool(host='hf-mirror.com', port=443): Max retries exceeded with url: /api/models/stabilityai/stable-diffusion-3.5-medium (Caused by ConnectTimeoutError(<HTTPSConnection(host='hf-mirror.com', port=443) at 0x7efbe1c1ac90>, 'Connection to hf-mirror.com timed out. (connect timeout=None)'))"), '(Request ID: 0cad3514-f481-4090-9c36-d3a79a5fda35)').
+Will try to load from local cache.
+Couldn't connect to the Hub: (MaxRetryError("HTTPSConnectionPool(host='hf-mirror.com', port=443): Max retries exceeded with url: /api/models/stabilityai/stable-diffusion-3.5-medium (Caused by ConnectTimeoutError(<HTTPSConnection(host='hf-mirror.com', port=443) at 0x7fcd5d0d2300>, 'Connection to hf-mirror.com timed out. (connect timeout=None)'))"), '(Request ID: df92ba54-fdee-4e4f-9555-e4a495cb9353)').
+Will try to load from local cache.
+Couldn't connect to the Hub: (MaxRetryError("HTTPSConnectionPool(host='hf-mirror.com', port=443): Max retries exceeded with url: /api/models/stabilityai/stable-diffusion-3.5-medium (Caused by ConnectTimeoutError(<HTTPSConnection(host='hf-mirror.com', port=443) at 0x7f42f16c3b30>, 'Connection to hf-mirror.com timed out. (connect timeout=None)'))"), '(Request ID: 4a8f95fb-0754-4159-a246-853c58fa8015)').
+Will try to load from local cache.
+[rank2]: Traceback (most recent call last):
+[rank2]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/connection.py", line 204, in _new_conn
+[rank2]:     sock = connection.create_connection(
+[rank2]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/util/connection.py", line 85, in create_connection
+[rank2]:     raise err
+[rank2]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/util/connection.py", line 73, in create_connection
+[rank2]:     sock.connect(sa)
+[rank2]: TimeoutError: [Errno 110] Connection timed out
+
+[rank2]: The above exception was the direct cause of the following exception:
+
+[rank2]: Traceback (most recent call last):
+[rank2]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/connectionpool.py", line 788, in urlopen
+[rank2]:     response = self._make_request(
+[rank2]:                ^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+[rank2]:     raise new_e
+[rank2]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+[rank2]:     self._validate_conn(conn)
+[rank2]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/connectionpool.py", line 1106, in _validate_conn
+[rank2]:     conn.connect()
+[rank2]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/connection.py", line 759, in connect
+[rank2]:     self.sock = sock = self._new_conn()
+[rank2]:                        ^^^^^^^^^^^^^^^^
+[rank2]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/connection.py", line 213, in _new_conn
+[rank2]:     raise ConnectTimeoutError(
+[rank2]: urllib3.exceptions.ConnectTimeoutError: (<HTTPSConnection(host='hf-mirror.com', port=443) at 0x7fcd5d0d2300>, 'Connection to hf-mirror.com timed out. (connect timeout=None)')
+
+[rank2]: The above exception was the direct cause of the following exception:
+
+[rank2]: Traceback (most recent call last):
+[rank2]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/requests/adapters.py", line 667, in send
+[rank2]:     resp = conn.urlopen(
+[rank2]:            ^^^^^^^^^^^^^
+[rank2]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/connectionpool.py", line 842, in urlopen
+[rank2]:     retries = retries.increment(
+[rank2]:               ^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/util/retry.py", line 543, in increment
+[rank2]:     raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+[rank2]:     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]: urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='hf-mirror.com', port=443): Max retries exceeded with url: /api/models/stabilityai/stable-diffusion-3.5-medium (Caused by ConnectTimeoutError(<HTTPSConnection(host='hf-mirror.com', port=443) at 0x7fcd5d0d2300>, 'Connection to hf-mirror.com timed out. (connect timeout=None)'))
+
+[rank2]: During handling of the above exception, another exception occurred:
+
+[rank2]: Traceback (most recent call last):
+[rank2]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/diffusers/pipelines/pipeline_utils.py", line 1408, in download
+[rank2]:     info = model_info(pretrained_model_name, token=token, revision=revision)
+[rank2]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+[rank2]:     return fn(*args, **kwargs)
+[rank2]:            ^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/huggingface_hub/hf_api.py", line 2518, in model_info
+[rank2]:     r = get_session().get(path, headers=headers, timeout=timeout, params=params)
+[rank2]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/requests/sessions.py", line 602, in get
+[rank2]:     return self.request("GET", url, **kwargs)
+[rank2]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/requests/sessions.py", line 589, in request
+[rank2]:     resp = self.send(prep, **send_kwargs)
+[rank2]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/requests/sessions.py", line 703, in send
+[rank2]:     r = adapter.send(request, **kwargs)
+[rank2]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 96, in send
+[rank2]:     return super().send(request, *args, **kwargs)
+[rank2]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/requests/adapters.py", line 688, in send
+[rank2]:     raise ConnectTimeout(e, request=request)
+[rank2]: requests.exceptions.ConnectTimeout: (MaxRetryError("HTTPSConnectionPool(host='hf-mirror.com', port=443): Max retries exceeded with url: /api/models/stabilityai/stable-diffusion-3.5-medium (Caused by ConnectTimeoutError(<HTTPSConnection(host='hf-mirror.com', port=443) at 0x7fcd5d0d2300>, 'Connection to hf-mirror.com timed out. (connect timeout=None)'))"), '(Request ID: df92ba54-fdee-4e4f-9555-e4a495cb9353)')
+
+[rank2]: The above exception was the direct cause of the following exception:
+
+[rank2]: Traceback (most recent call last):
+[rank2]:   File "/opt/project/p/codes/flow_grpo_official/scripts/train_sd3.py", line 967, in <module>
+[rank2]:     app.run(main)
+[rank2]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/absl/app.py", line 367, in run
+[rank2]:     _run_main(main, args)
+[rank2]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/absl/app.py", line 312, in _run_main
+[rank2]:     sys.exit(main(argv))
+[rank2]:              ^^^^^^^^^^
+[rank2]:   File "/opt/project/p/codes/flow_grpo_official/scripts/train_sd3.py", line 377, in main
+[rank2]:     pipeline = StableDiffusion3Pipeline.from_pretrained(
+[rank2]:                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+[rank2]:     return fn(*args, **kwargs)
+[rank2]:            ^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/diffusers/pipelines/pipeline_utils.py", line 773, in from_pretrained
+[rank2]:     cached_folder = cls.download(
+[rank2]:                     ^^^^^^^^^^^^^
+[rank2]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+[rank2]:     return fn(*args, **kwargs)
+[rank2]:            ^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/diffusers/pipelines/pipeline_utils.py", line 1602, in download
+[rank2]:     raise EnvironmentError(
+[rank2]: OSError: Cannot load model stabilityai/stable-diffusion-3.5-medium: model is not cached locally and an error occurred while trying to fetch metadata from the Hub. Please check out the root cause in the stacktrace above.
+[rank3]: Traceback (most recent call last):
+[rank3]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/connection.py", line 204, in _new_conn
+[rank3]:     sock = connection.create_connection(
+[rank3]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/util/connection.py", line 85, in create_connection
+[rank3]:     raise err
+[rank3]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/util/connection.py", line 73, in create_connection
+[rank3]:     sock.connect(sa)
+[rank3]: TimeoutError: [Errno 110] Connection timed out
+
+[rank3]: The above exception was the direct cause of the following exception:
+
+[rank3]: Traceback (most recent call last):
+[rank3]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/connectionpool.py", line 788, in urlopen
+[rank3]:     response = self._make_request(
+[rank3]:                ^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+[rank3]:     raise new_e
+[rank3]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+[rank3]:     self._validate_conn(conn)
+[rank3]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/connectionpool.py", line 1106, in _validate_conn
+[rank3]:     conn.connect()
+[rank3]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/connection.py", line 759, in connect
+[rank3]:     self.sock = sock = self._new_conn()
+[rank3]:                        ^^^^^^^^^^^^^^^^
+[rank3]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/connection.py", line 213, in _new_conn
+[rank3]:     raise ConnectTimeoutError(
+[rank3]: urllib3.exceptions.ConnectTimeoutError: (<HTTPSConnection(host='hf-mirror.com', port=443) at 0x7f42f16c3b30>, 'Connection to hf-mirror.com timed out. (connect timeout=None)')
+
+[rank3]: The above exception was the direct cause of the following exception:
+
+[rank3]: Traceback (most recent call last):
+[rank3]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/requests/adapters.py", line 667, in send
+[rank3]:     resp = conn.urlopen(
+[rank3]:            ^^^^^^^^^^^^^
+[rank3]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/connectionpool.py", line 842, in urlopen
+[rank3]:     retries = retries.increment(
+[rank3]:               ^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/util/retry.py", line 543, in increment
+[rank3]:     raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+[rank3]:     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]: urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='hf-mirror.com', port=443): Max retries exceeded with url: /api/models/stabilityai/stable-diffusion-3.5-medium (Caused by ConnectTimeoutError(<HTTPSConnection(host='hf-mirror.com', port=443) at 0x7f42f16c3b30>, 'Connection to hf-mirror.com timed out. (connect timeout=None)'))
+
+[rank3]: During handling of the above exception, another exception occurred:
+
+[rank3]: Traceback (most recent call last):
+[rank3]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/diffusers/pipelines/pipeline_utils.py", line 1408, in download
+[rank3]:     info = model_info(pretrained_model_name, token=token, revision=revision)
+[rank3]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+[rank3]:     return fn(*args, **kwargs)
+[rank3]:            ^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/huggingface_hub/hf_api.py", line 2518, in model_info
+[rank3]:     r = get_session().get(path, headers=headers, timeout=timeout, params=params)
+[rank3]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/requests/sessions.py", line 602, in get
+[rank3]:     return self.request("GET", url, **kwargs)
+[rank3]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/requests/sessions.py", line 589, in request
+[rank3]:     resp = self.send(prep, **send_kwargs)
+[rank3]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/requests/sessions.py", line 703, in send
+[rank3]:     r = adapter.send(request, **kwargs)
+[rank3]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 96, in send
+[rank3]:     return super().send(request, *args, **kwargs)
+[rank3]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/requests/adapters.py", line 688, in send
+[rank3]:     raise ConnectTimeout(e, request=request)
+[rank3]: requests.exceptions.ConnectTimeout: (MaxRetryError("HTTPSConnectionPool(host='hf-mirror.com', port=443): Max retries exceeded with url: /api/models/stabilityai/stable-diffusion-3.5-medium (Caused by ConnectTimeoutError(<HTTPSConnection(host='hf-mirror.com', port=443) at 0x7f42f16c3b30>, 'Connection to hf-mirror.com timed out. (connect timeout=None)'))"), '(Request ID: 4a8f95fb-0754-4159-a246-853c58fa8015)')
+
+[rank3]: The above exception was the direct cause of the following exception:
+
+[rank3]: Traceback (most recent call last):
+[rank3]:   File "/opt/project/p/codes/flow_grpo_official/scripts/train_sd3.py", line 967, in <module>
+[rank3]:     app.run(main)
+[rank3]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/absl/app.py", line 367, in run
+[rank3]:     _run_main(main, args)
+[rank3]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/absl/app.py", line 312, in _run_main
+[rank3]:     sys.exit(main(argv))
+[rank3]:              ^^^^^^^^^^
+[rank3]:   File "/opt/project/p/codes/flow_grpo_official/scripts/train_sd3.py", line 377, in main
+[rank3]:     pipeline = StableDiffusion3Pipeline.from_pretrained(
+[rank3]:                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+[rank3]:     return fn(*args, **kwargs)
+[rank3]:            ^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/diffusers/pipelines/pipeline_utils.py", line 773, in from_pretrained
+[rank3]:     cached_folder = cls.download(
+[rank3]:                     ^^^^^^^^^^^^^
+[rank3]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+[rank3]:     return fn(*args, **kwargs)
+[rank3]:            ^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/diffusers/pipelines/pipeline_utils.py", line 1602, in download
+[rank3]:     raise EnvironmentError(
+[rank3]: OSError: Cannot load model stabilityai/stable-diffusion-3.5-medium: model is not cached locally and an error occurred while trying to fetch metadata from the Hub. Please check out the root cause in the stacktrace above.
+[rank1]: Traceback (most recent call last):
+[rank1]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/connection.py", line 204, in _new_conn
+[rank1]:     sock = connection.create_connection(
+[rank1]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/util/connection.py", line 85, in create_connection
+[rank1]:     raise err
+[rank1]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/util/connection.py", line 73, in create_connection
+[rank1]:     sock.connect(sa)
+[rank1]: TimeoutError: [Errno 110] Connection timed out
+
+[rank1]: The above exception was the direct cause of the following exception:
+
+[rank1]: Traceback (most recent call last):
+[rank1]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/connectionpool.py", line 788, in urlopen
+[rank1]:     response = self._make_request(
+[rank1]:                ^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/connectionpool.py", line 488, in _make_request
+[rank1]:     raise new_e
+[rank1]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/connectionpool.py", line 464, in _make_request
+[rank1]:     self._validate_conn(conn)
+[rank1]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/connectionpool.py", line 1106, in _validate_conn
+[rank1]:     conn.connect()
+[rank1]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/connection.py", line 759, in connect
+[rank1]:     self.sock = sock = self._new_conn()
+[rank1]:                        ^^^^^^^^^^^^^^^^
+[rank1]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/connection.py", line 213, in _new_conn
+[rank1]:     raise ConnectTimeoutError(
+[rank1]: urllib3.exceptions.ConnectTimeoutError: (<HTTPSConnection(host='hf-mirror.com', port=443) at 0x7efbe1c1ac90>, 'Connection to hf-mirror.com timed out. (connect timeout=None)')
+
+[rank1]: The above exception was the direct cause of the following exception:
+
+[rank1]: Traceback (most recent call last):
+[rank1]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/requests/adapters.py", line 667, in send
+[rank1]:     resp = conn.urlopen(
+[rank1]:            ^^^^^^^^^^^^^
+[rank1]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/connectionpool.py", line 842, in urlopen
+[rank1]:     retries = retries.increment(
+[rank1]:               ^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/urllib3/util/retry.py", line 543, in increment
+[rank1]:     raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+[rank1]:     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]: urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='hf-mirror.com', port=443): Max retries exceeded with url: /api/models/stabilityai/stable-diffusion-3.5-medium (Caused by ConnectTimeoutError(<HTTPSConnection(host='hf-mirror.com', port=443) at 0x7efbe1c1ac90>, 'Connection to hf-mirror.com timed out. (connect timeout=None)'))
+
+[rank1]: During handling of the above exception, another exception occurred:
+
+[rank1]: Traceback (most recent call last):
+[rank1]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/diffusers/pipelines/pipeline_utils.py", line 1408, in download
+[rank1]:     info = model_info(pretrained_model_name, token=token, revision=revision)
+[rank1]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+[rank1]:     return fn(*args, **kwargs)
+[rank1]:            ^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/huggingface_hub/hf_api.py", line 2518, in model_info
+[rank1]:     r = get_session().get(path, headers=headers, timeout=timeout, params=params)
+[rank1]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/requests/sessions.py", line 602, in get
+[rank1]:     return self.request("GET", url, **kwargs)
+[rank1]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/requests/sessions.py", line 589, in request
+[rank1]:     resp = self.send(prep, **send_kwargs)
+[rank1]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/requests/sessions.py", line 703, in send
+[rank1]:     r = adapter.send(request, **kwargs)
+[rank1]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 96, in send
+[rank1]:     return super().send(request, *args, **kwargs)
+[rank1]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/requests/adapters.py", line 688, in send
+[rank1]:     raise ConnectTimeout(e, request=request)
+[rank1]: requests.exceptions.ConnectTimeout: (MaxRetryError("HTTPSConnectionPool(host='hf-mirror.com', port=443): Max retries exceeded with url: /api/models/stabilityai/stable-diffusion-3.5-medium (Caused by ConnectTimeoutError(<HTTPSConnection(host='hf-mirror.com', port=443) at 0x7efbe1c1ac90>, 'Connection to hf-mirror.com timed out. (connect timeout=None)'))"), '(Request ID: 0cad3514-f481-4090-9c36-d3a79a5fda35)')
+
+[rank1]: The above exception was the direct cause of the following exception:
+
+[rank1]: Traceback (most recent call last):
+[rank1]:   File "/opt/project/p/codes/flow_grpo_official/scripts/train_sd3.py", line 967, in <module>
+[rank1]:     app.run(main)
+[rank1]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/absl/app.py", line 367, in run
+[rank1]:     _run_main(main, args)
+[rank1]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/absl/app.py", line 312, in _run_main
+[rank1]:     sys.exit(main(argv))
+[rank1]:              ^^^^^^^^^^
+[rank1]:   File "/opt/project/p/codes/flow_grpo_official/scripts/train_sd3.py", line 377, in main
+[rank1]:     pipeline = StableDiffusion3Pipeline.from_pretrained(
+[rank1]:                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+[rank1]:     return fn(*args, **kwargs)
+[rank1]:            ^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/diffusers/pipelines/pipeline_utils.py", line 773, in from_pretrained
+[rank1]:     cached_folder = cls.download(
+[rank1]:                     ^^^^^^^^^^^^^
+[rank1]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 114, in _inner_fn
+[rank1]:     return fn(*args, **kwargs)
+[rank1]:            ^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/diffusers/pipelines/pipeline_utils.py", line 1602, in download
+[rank1]:     raise EnvironmentError(
+[rank1]: OSError: Cannot load model stabilityai/stable-diffusion-3.5-medium: model is not cached locally and an error occurred while trying to fetch metadata from the Hub. Please check out the root cause in the stacktrace above.
+W0613 22:31:14.048000 609 site-packages/torch/distributed/elastic/multiprocessing/api.py:897] Sending process 686 closing signal SIGTERM
+E0613 22:31:14.615000 609 site-packages/torch/distributed/elastic/multiprocessing/api.py:869] failed (exitcode: 1) local_rank: 1 (pid: 687) of binary: /opt/nas/p/conda/envs/lt-env/bin/python3.12
+Traceback (most recent call last):
+  File "/opt/nas/p/conda/envs/lt-env/bin/accelerate", line 6, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/accelerate/commands/accelerate_cli.py", line 48, in main
+    args.func(args)
+  File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/accelerate/commands/launch.py", line 1190, in launch_command
+    multi_gpu_launcher(args)
+  File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/accelerate/commands/launch.py", line 808, in multi_gpu_launcher
+    distrib_run.run(args)
+  File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/torch/distributed/run.py", line 909, in run
+    elastic_launch(
+  File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 138, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 269, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+scripts/train_sd3.py FAILED
+------------------------------------------------------------
+Failures:
+[1]:
+  time      : 2026-06-13_22:31:14
+  host      : VM-5-94-tencentos
+  rank      : 3 (local_rank: 3)
+  exitcode  : 1 (pid: 689)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-06-13_22:31:14
+  host      : VM-5-94-tencentos
+  rank      : 1 (local_rank: 1)
+  exitcode  : 1 (pid: 687)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================
