@@ -77,7 +77,33 @@ curl -sI --connect-timeout 5 https://hf-mirror.com | head -1   # 国内镜像
 curl -sI --connect-timeout 5 https://huggingface.co | head -1  # 官方
 ```
 - 镜像返回 `HTTP/.. 200/301` → 走下面方案 A
-- 两条都超时 → 机器完全不出网,需在有网机器下好模型再 scp 过来(方案 B,见文末)
+- **两条都超时**(连镜像也不通)→ 先按下面「网络受限排查」找模型来源,别盲跑
+
+### 网络受限排查(连 hf-mirror 都超时时,按序找到一个能用的就停)
+
+> 典型情况:pod 能连 GitHub(clone/push 正常),但 HF / 镜像都被墙。
+> 说明是选择性放行,模型多半要走集群自己的渠道,而不是从 pod 直接下。
+
+```bash
+# ① 模型是否已预置在共享存储/NAS(最省事,集群常预置热门模型)
+ls /opt/nas 2>/dev/null
+find /opt/nas /opt/project -iname "*stable-diffusion-3*" 2>/dev/null | head
+find / -iname "*PickScore*" 2>/dev/null | head
+
+# ② 是否有现成 http 代理(企业集群常配代理走外网)
+env | grep -i proxy
+cat /etc/environment 2>/dev/null | grep -i proxy
+
+# ③ 到底能连到哪些外网
+curl -sI --connect-timeout 5 https://www.modelscope.cn | head -1  # 阿里魔搭,国内集群常通
+curl -sI --connect-timeout 5 https://github.com        | head -1  # 已知通
+```
+
+按结果选路:
+- **①找到模型** → 改 `config/grpo.py` 里 `config.pretrained.model` 指向该路径,直接跑。
+- **②有代理** → `export http_proxy=... https_proxy=...`,回方案 A。
+- **③只有 modelscope 通** → 从魔搭下 SD3.5(国内无需翻墙,见方案 C)。
+- **全不通、只有 GitHub** → 方案 B:本地下好传到 `/opt/nas`(持久存储)。
 
 ### 方案 A:走 HF 镜像 + 预下载模型
 ```bash
@@ -178,3 +204,21 @@ scp -r sd35 pickscore cliph 用户@训练机:/数据盘/models/
   `config.pretrained.model` 改成 `/数据盘/models/sd35`,reward 同理改 scorer 里的路径。
 
 > 方案 B 较繁琐,仅在「连 hf-mirror.com 都不通」时才用。优先试方案 A。
+
+---
+
+## 附:方案 C —— 从魔搭 ModelScope 下载(国内集群,modelscope 通时)
+
+国内 Tencent/阿里集群常常 HF 全墙、但 `modelscope.cn` 通。SD3.5 在魔搭有镜像。
+
+```bash
+pip install modelscope
+# 在训练机上直接下到本地目录(无需翻墙、无需 HF token)
+python -c "from modelscope import snapshot_download; \
+  snapshot_download('AI-ModelScope/stable-diffusion-3.5-medium', local_dir='/opt/nas/models/sd35')"
+```
+
+然后把 `config/grpo.py` 里 `config.pretrained.model` 改成 `/opt/nas/models/sd35` 即可。
+
+> PickScore / CLIP-H 魔搭也多有镜像(搜对应名),或走方案 B 单独传这两个小模型。
+> 存到 `/opt/nas`(持久盘)而非 pod 本地,pod 重启不会丢。
