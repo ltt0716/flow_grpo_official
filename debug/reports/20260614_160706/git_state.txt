@@ -1,0 +1,41 @@
+### branch & commit
+main
+1883c17e2d31dc63a51de175f9e9387722726715
+
+### working tree 改动(你本地改了哪些文件)
+ M RUNBOOK.md
+ M debug/report_error.sh
+ D debug/reports/20260613_210711/env.txt
+ D debug/reports/20260613_210711/git_state.txt
+ D debug/reports/20260613_210711/nvidia_smi.txt
+ D debug/reports/20260613_210711/pip_freeze.txt
+ D debug/reports/20260613_210711/train_tail.txt
+ D debug/reports/20260613_221121/env.txt
+ D debug/reports/20260613_221121/git_state.txt
+ D debug/reports/20260613_221121/nvidia_smi.txt
+ D debug/reports/20260613_221121/pip_freeze.txt
+ D debug/reports/20260613_221121/train_tail.txt
+ D debug/reports/20260614_141347/env.txt
+ D debug/reports/20260614_141347/git_state.txt
+ D debug/reports/20260614_141347/nvidia_smi.txt
+ D debug/reports/20260614_141347/pip_freeze.txt
+ D debug/reports/20260614_141347/train_tail.txt
+ D debug/reports/20260614_141639/env.txt
+ D debug/reports/20260614_141639/git_state.txt
+ D debug/reports/20260614_141639/nvidia_smi.txt
+ D debug/reports/20260614_141639/pip_freeze.txt
+ D debug/reports/20260614_141639/train_tail.txt
+ M scripts/download_models_modelscope.sh
+?? debug/reports/20260614_160706/
+
+### 相对上游/远程的差异 commit
+1883c17 @ Add download_models_modelscope.sh: 从魔搭下 3 个模型到持久盘
+79e902d @ RUNBOOK: 加网络受限排查(NAS预置/代理/modelscope)+ 方案C 魔搭下载
+ca39e17 debug report 20260614_141639
+5b9a1ef debug report 20260614_141347
+f3ab38b @ RUNBOOK: 加 HF 镜像方案(方案A)解决国内连不上 huggingface,附离线传输方案B @
+3dcf826 debug report 20260613_221121
+a646ae3 @ Fix Python 3.12: 用 importlib 替换已移除的 imp 模块
+e03b1a2 debug report 20260613_210711
+9b9d045 @ Add RUNBOOK.md: 训练机部署步骤(clone/装依赖/登录/启动/排错) @
+953c97b @ Add .gitattributes: 强制 *.sh 用 LF (Windows->Linux 防 ^M) @
