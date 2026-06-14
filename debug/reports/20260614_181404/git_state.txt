@@ -1,0 +1,18 @@
+### branch & commit
+main
+f47d85a046ba91c7e2c9d6e45bb38bcf1305c0bd
+
+### working tree 改动(你本地改了哪些文件)
+?? debug/reports/20260614_181404/
+
+### 相对上游/远程的差异 commit
+f47d85a @ 指向 NAS 本地模型路径(pickscore_sd3_4gpu)
+20451de add: 上传环境排查报告及魔搭下载脚本
+3ccb641 debug report 20260614_160706
+1883c17 @ Add download_models_modelscope.sh: 从魔搭下 3 个模型到持久盘
+79e902d @ RUNBOOK: 加网络受限排查(NAS预置/代理/modelscope)+ 方案C 魔搭下载
+ca39e17 debug report 20260614_141639
+5b9a1ef debug report 20260614_141347
+f3ab38b @ RUNBOOK: 加 HF 镜像方案(方案A)解决国内连不上 huggingface,附离线传输方案B @
+3dcf826 debug report 20260613_221121
+a646ae3 @ Fix Python 3.12: 用 importlib 替换已移除的 imp 模块
