@@ -68,7 +68,7 @@ PY
 
 echo "==> [4/5] nvidia-smi + 依赖清单"
 nvidia-smi > "$OUT/nvidia_smi.txt" 2>&1 || echo "没有 nvidia-smi" > "$OUT/nvidia_smi.txt"
-pip freeze   > "$OUT/pip_freeze.txt" 2>&1 || echo "pip freeze 失败" > "$OUT/pip_freeze.txt"
+pip freeze | grep -v "ghp_" > "$OUT/pip_freeze.txt" 2>&1 || echo "pip freeze 失败" > "$OUT/pip_freeze.txt"
 
 echo "==> [5/5] 提交并推送"
 # -f 强制加:仓库 .gitignore 会拦 *.log,这里日志已存成 .txt,再加 -f 双保险

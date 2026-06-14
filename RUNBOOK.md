@@ -222,3 +222,8 @@ python -c "from modelscope import snapshot_download; \
 
 > PickScore / CLIP-H 魔搭也多有镜像(搜对应名),或走方案 B 单独传这两个小模型。
 > 存到 `/opt/nas`(持久盘)而非 pod 本地,pod 重启不会丢。
+
+## 模型路径
+/opt/nas/p/longtao/models/stable-diffusion-3.5-medium
+/opt/nas/p/longtao/models/PickScore_v1
+/opt/nas/p/longtao/models/CLIP-ViT-H-14-laion2B-s32B-b79K

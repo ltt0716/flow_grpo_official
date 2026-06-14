@@ -4,16 +4,16 @@
 # 适用:训练机连不上 HuggingFace/hf-mirror,但 modelscope.cn 通(国内集群常见)。
 #
 # ⚠️ 模型文件下到 /opt/nas(持久共享盘),不是 pod 本地、更不是 git。
-#    pod 重启本地盘会清空,NAS 不会。MODELS_DIR 按你集群的持久盘路径改。
+#    pod 重启本地盘会清空,NAS 不会。
 #
 # 用法:
 #   pip install modelscope
-#   bash scripts/download_models_modelscope.sh
+#   bash download_models_modelscope.sh
 # ============================================================================
 set -uo pipefail
 
-# === 改成你集群的持久盘路径 ===
-MODELS_DIR="${MODELS_DIR:-/opt/nas/models}"
+# === 已经修改为你集群的专属持久盘路径 ===
+MODELS_DIR="${MODELS_DIR:-/opt/nas/p/longtao/models}"
 mkdir -p "$MODELS_DIR"
 echo "==> 模型将下到: $MODELS_DIR"
 
@@ -27,8 +27,7 @@ dl () {  # dl <modelscope_id> <目标子目录>
 
 # 1) SD3.5-medium —— 已确认在 modelscope(主模型,~20G)
 dl "AI-ModelScope/stable-diffusion-3.5-medium"            "stable-diffusion-3.5-medium"
-
-# 2) PickScore_v1 —— reward 权重(~4G)。候选 ID,若 404 见兜底。
+miasnmian
 dl "AI-ModelScope/PickScore_v1"                            "PickScore_v1"
 
 # 3) CLIP-ViT-H —— PickScore 的处理器。候选 ID,若 404 见兜底。
