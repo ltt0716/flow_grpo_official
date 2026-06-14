@@ -417,8 +417,8 @@ def pickscore_sd3_4gpu():
     config = compressibility()
     config.dataset = os.path.join(os.getcwd(), "dataset/pickscore")
 
-    # sd3.5 medium
-    config.pretrained.model = "stabilityai/stable-diffusion-3.5-medium"
+    # sd3.5 medium —— 指向 NAS 本地路径(训练机连不上 HF,见 RUNBOOK 方案 C)
+    config.pretrained.model = "/opt/nas/p/longtao/models/stable-diffusion-3.5-medium"
     config.sample.num_steps = 10
     config.sample.eval_num_steps = 40
     config.sample.guidance_scale = 4.5
