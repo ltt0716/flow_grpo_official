@@ -1,0 +1,18 @@
+### branch & commit
+main
+5b9a1ef54597a5a807052bf48b3564ada4e4a5e1
+
+### working tree 改动(你本地改了哪些文件)
+?? debug/reports/20260614_141639/
+
+### 相对上游/远程的差异 commit
+5b9a1ef debug report 20260614_141347
+f3ab38b @ RUNBOOK: 加 HF 镜像方案(方案A)解决国内连不上 huggingface,附离线传输方案B @
+3dcf826 debug report 20260613_221121
+a646ae3 @ Fix Python 3.12: 用 importlib 替换已移除的 imp 模块
+e03b1a2 debug report 20260613_210711
+9b9d045 @ Add RUNBOOK.md: 训练机部署步骤(clone/装依赖/登录/启动/排错) @
+953c97b @ Add .gitattributes: 强制 *.sh 用 LF (Windows->Linux 防 ^M) @
+9b29df0 @ Add debug/report_error.sh: 训练报错一键打包推到 git
+879042c Merge pull request #241 from GongyeLiu/docs/add-verl-omni-support
+bd7ea4b Update README.md
