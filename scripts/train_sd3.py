@@ -755,6 +755,14 @@ def main(_):
                 },
                 step=global_step,
             )
+            # 额外:把 reward 打到 stdout + 落一份纯文本 debug/metrics.jsonl。
+            # wandb 离线时也能监控(tail train.log 看 reward),且 metrics.jsonl 不被
+            # .gitignore 拦,push 后可直接读整条曲线分析。
+            _reward_avg = float(gathered_rewards["avg"].mean())
+            print(f"[metrics] epoch={epoch} step={global_step} reward_avg={_reward_avg:.4f}", flush=True)
+            os.makedirs("debug", exist_ok=True)
+            with open("debug/metrics.jsonl", "a") as _mf:
+                _mf.write(json.dumps({"epoch": float(epoch), "step": int(global_step), "reward_avg": _reward_avg}) + "\n")
 
         # per-prompt mean/std tracking
         if config.per_prompt_stat_tracking:
