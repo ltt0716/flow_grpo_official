@@ -412,6 +412,33 @@ def general_ocr_sd3_4gpu():
     config.per_prompt_stat_tracking = True
     return config
 
+def pickscore_sd3_8gpu():
+    # 8 卡:复用 4 卡配置,只按 gpu_number=8 重算 batch 数学。
+    # 每 epoch 总样本数不变(=256)、group size 不变 → 训练动态与 4 卡一致,吞吐约 2 倍。
+    config = pickscore_sd3_4gpu()
+    gpu_number = 8
+    config.sample.num_batches_per_epoch = int(
+        16 / (gpu_number * config.sample.train_batch_size / config.sample.num_image_per_prompt)
+    )
+    assert config.sample.num_batches_per_epoch % 2 == 0, "num_batches_per_epoch 必须是偶数"
+    config.train.gradient_accumulation_steps = config.sample.num_batches_per_epoch // 2
+    return config
+
+
+def pickscore_sd3_8gpu_resume():
+    # 8 卡续训:从最新 checkpoint 的 LoRA warm-start(用法同 4gpu_resume)。
+    import glob
+    config = pickscore_sd3_8gpu()
+    ckpts = glob.glob(os.path.join(config.save_dir, "checkpoints", "checkpoint-*", "lora"))
+    if ckpts:
+        ckpts.sort(key=lambda p: int(p.split("checkpoint-")[1].split(os.sep)[0]))
+        config.train.lora_path = ckpts[-1]
+        print(f"[resume] 从 LoRA checkpoint 续训: {config.train.lora_path}")
+    else:
+        print(f"[resume] 警告:{config.save_dir}/checkpoints 下没找到 checkpoint,将从头训练")
+    return config
+
+
 def pickscore_sd3_4gpu_resume():
     # 续训:从最新 checkpoint 的 LoRA 接着练(warm-start,保住已训的 ~400 epoch)。
     # 用法: --config config/grpo.py:pickscore_sd3_4gpu_resume

@@ -1,25 +1,28 @@
-# ============ 复制运行区(平台提交作业 / 前台运行)============
-# 从头训练:保持前台(平台靠它保活,别用 nohup)+ git pull 拿新日志
+# ============ 复制运行区(8 卡 / 平台提交作业 / 前台)============
+# 从头训练:8 卡 + 前台(平台保活,不用 nohup)+ git pull 拿新日志
 
 # 1. 进目录
 cd /opt/project/p/codes/flow_grpo_official
 
-# 2. 拉新代码(关键:才有 reward 打 stdout + metrics.jsonl 的新日志)
+# 2. 拉新代码(关键:才有 8 卡配置 + reward 新日志)
 git pull
 
-# 3. (可选)归档旧产物,新 run 数据干净(保留已验证的 400-epoch 结果,不删)
+# 3. (可选)归档旧产物,新 run 数据干净(保留已验证结果,不删)
 mkdir -p old_run_backup && mv logs wandb old_run_backup/ 2>/dev/null; rm -f debug/metrics.jsonl
 
 # 4. 环境变量
 export WANDB_MODE=offline
-export TOKENIZERS_PARALLELISM=false   # 消 tokenizer 警告刷屏
-export HF_HUB_OFFLINE=1               # 离线,防 HF 超时
+export TOKENIZERS_PARALLELISM=false
+export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
 mkdir -p debug
 
-# 5. 前台启动(和你原来一样,只是命令本身没变)
+# 5. 前台启动:注意 --num_processes=8 和配置名 :pickscore_sd3_8gpu 必须配套
 accelerate launch --config_file scripts/accelerate_configs/multi_gpu.yaml \
-  --num_processes=4 --main_process_port 29501 \
-  scripts/train_sd3.py --config config/grpo.py:pickscore_sd3_4gpu \
+  --num_processes=8 --main_process_port 29501 \
+  scripts/train_sd3.py --config config/grpo.py:pickscore_sd3_8gpu \
   2>&1 | tee debug/train.log
-# ============================================================
+
+# 被平台杀掉后接力(从最新 checkpoint 续训):
+#   --config config/grpo.py:pickscore_sd3_8gpu_resume
+# ===============================================================
