@@ -1,0 +1,7 @@
+cd /opt/project/p/codes/flow_grpo_official
+ls -la wandb/ 2>/dev/null || echo "❌ 没有 wandb 目录(被清了)"
+ls -la debug/train.log 2>/dev/null || echo "❌ train.log 没了"
+ls -la logs/pickscore/sd3.5-M/ 2>/dev/null || echo "❌ checkpoint 没了"
+echo "--- 全盘找找 ---"
+find /opt -name "wandb-summary.json" 2>/dev/null | head
+find /opt -path "*pickscore*" -name "*.safetensors" 2>/dev/null | head
