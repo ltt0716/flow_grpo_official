@@ -1,16 +1,19 @@
 # ============ 复制运行区(在训练机上)============
-# 续训:从最新 checkpoint 接着练 + nohup 不断线 + 新日志(reward 进 stdout/metrics.jsonl)
+# 从头训练:nohup 不断线 + 新日志(reward 进 stdout/metrics.jsonl)
 cd /opt/project/p/codes/flow_grpo_official
 git pull
 
-# 1) 确认有 checkpoint(应看到 checkpoint-XXXX 目录)
-ls -lt logs/pickscore/sd3.5-M/checkpoints/
+# (推荐)归档上次产物,保持新 run 数据干净(不删,留作已验证的 400-epoch 结果)
+mkdir -p old_run_backup
+mv logs   old_run_backup/ 2>/dev/null
+mv wandb  old_run_backup/ 2>/dev/null
+rm -f debug/metrics.jsonl
 
-# 2) nohup 后台续训(自动加载最新 LoRA;终端可关)
-bash scripts/launch_train.sh pickscore_sd3_4gpu_resume
+# 从头训练(默认配置=全新,不加载任何 checkpoint)
+bash scripts/launch_train.sh
 
-# 3) 看日志:确认有 [resume] 从 LoRA checkpoint 续训: ...  以及 reward 在刷
-tail -f debug/train.log | grep -E "resume|metrics"
+# 看 reward 在刷(新日志直接打 stdout)
+tail -f debug/train.log | grep -E "metrics|epoch"
 
 # 停止训练: kill $(cat debug/train.pid)
 # ================================================
