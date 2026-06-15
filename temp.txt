@@ -1,81 +1,16 @@
-# ============ 复制运行区(在训练机上) ============
-# 重新解析 wandb reward(修了取列名的 bug)
+# ============ 复制运行区(在训练机上)============
+# 续训:从最新 checkpoint 接着练 + nohup 不断线 + 新日志(reward 进 stdout/metrics.jsonl)
 cd /opt/project/p/codes/flow_grpo_official
 git pull
-python debug/extract_wandb_reward.py
 
-# 把结果推给我看(csv + 脚本打印的样例记录)
-git add -f debug/wandb_reward.csv
-git commit -m "reward csv v2"
-git push
-# =================================================
+# 1) 确认有 checkpoint(应看到 checkpoint-XXXX 目录)
+ls -lt logs/pickscore/sd3.5-M/checkpoints/
 
+# 2) nohup 后台续训(自动加载最新 LoRA;终端可关)
+bash scripts/launch_train.sh pickscore_sd3_4gpu_resume
 
-(lt-env) root@cvplat-lt-test2-0:/opt/project/p/codes/flow_grpo_official# python debug/extract_wandb_reward.py
+# 3) 看日志:确认有 [resume] 从 LoRA checkpoint 续训: ...  以及 reward 在刷
+tail -f debug/train.log | grep -E "resume|metrics"
 
---- wandb/offline-run-20260613_214836-zr0sgzct/run-zr0sgzct.wandb: 解析到 0 条 history ---
---- wandb/offline-run-20260613_222903-uqk97px5/run-uqk97px5.wandb: 解析到 0 条 history ---
-=== 样例 history 记录(原始 proto)===
-item {
-  nested_key: "eval_reward_pickscore"
-  value_json: "0.8347249627113342"
-}
-item {
-  nested_key: "group_size"
-  value_json: "25.6"
-}
-item {
-  nested_key: "approx_kl"
-  value_json: "0"
-}
-item {
-  nested_key: "_runtime"
-  value_json: "1346.686090982"
-}
-item {
-  nested_key: "actual_batch_size"
-  value_json: "8"
-}
-item {
-  nested_key: "loss"
-  value_json: "0.016886832531174317"
-}
-item {
-  nested_key: "eval_reward_avg"
-  value_json: "0.8347249627113342"
-}
-item {
-  nested_key: "epoch"
-  value_json: "0"
-}
-item {
-  nested_key: "reward_pickscore"
-  value_json: "0.8184367418289185"
-}
-item {
-  nested_key: "trained_prompt_num"
-  value_json: "10"
-}
-item {
-  nested_key: "reward_std_mean"
-  value_json: "0.020565446466207504"
-}
-item {
-  nested_key: "_timestamp"
-  value_json: "1.7814340373466744e+09"
-=== /样例 ===
---- wandb/offline-run-20260614_182540-re3leujt/run-re3leujt.wandb: 解析到 800 条 history ---
-
-✅ 导出 800 行 -> debug/wandb_reward.csv
-
-reward 列 = eval_reward_avg  (epoch 列 = epoch)  最近 10 条:
-  epoch=395  eval_reward_avg=None
-  epoch=395  eval_reward_avg=None
-  epoch=396  eval_reward_avg=None
-  epoch=396  eval_reward_avg=None
-  epoch=397  eval_reward_avg=None
-  epoch=397  eval_reward_avg=None
-  epoch=398  eval_reward_avg=None
-  epoch=398  eval_reward_avg=None
-  epoch=399  eval_reward_avg=None
-  epoch=399  eval_reward_avg=None
+# 停止训练: kill $(cat debug/train.pid)
+# ================================================

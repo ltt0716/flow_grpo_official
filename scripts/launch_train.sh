@@ -15,6 +15,10 @@
 set -uo pipefail
 cd "$(git rev-parse --show-toplevel)"
 
+# 配置名作为第 1 个参数,默认全新训练;续训传 pickscore_sd3_4gpu_resume
+CONFIG_NAME="${1:-pickscore_sd3_4gpu}"
+echo "==> 使用配置: $CONFIG_NAME"
+
 export WANDB_MODE=offline            # 离线记录(无外网)
 export TOKENIZERS_PARALLELISM=false  # 消掉 tokenizer fork 警告刷屏
 export HF_HUB_OFFLINE=1              # 模型全在本地,禁止联网取元数据
@@ -23,7 +27,7 @@ mkdir -p debug
 
 nohup accelerate launch --config_file scripts/accelerate_configs/multi_gpu.yaml \
   --num_processes=4 --main_process_port 29501 \
-  scripts/train_sd3.py --config config/grpo.py:pickscore_sd3_4gpu \
+  scripts/train_sd3.py --config "config/grpo.py:$CONFIG_NAME" \
   > debug/train.log 2>&1 &
 
 PID=$!

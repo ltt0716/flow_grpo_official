@@ -412,6 +412,22 @@ def general_ocr_sd3_4gpu():
     config.per_prompt_stat_tracking = True
     return config
 
+def pickscore_sd3_4gpu_resume():
+    # 续训:从最新 checkpoint 的 LoRA 接着练(warm-start,保住已训的 ~400 epoch)。
+    # 用法: --config config/grpo.py:pickscore_sd3_4gpu_resume
+    # 注意:warm-start 只续 LoRA 权重;optimizer/EMA/epoch 计数重置(影响很小)。
+    import glob
+    config = pickscore_sd3_4gpu()
+    ckpts = glob.glob(os.path.join(config.save_dir, "checkpoints", "checkpoint-*", "lora"))
+    if ckpts:
+        ckpts.sort(key=lambda p: int(p.split("checkpoint-")[1].split(os.sep)[0]))
+        config.train.lora_path = ckpts[-1]
+        print(f"[resume] 从 LoRA checkpoint 续训: {config.train.lora_path}")
+    else:
+        print(f"[resume] 警告:{config.save_dir}/checkpoints 下没找到 checkpoint,将从头训练")
+    return config
+
+
 def pickscore_sd3_4gpu():
     gpu_number=4
     config = compressibility()
