@@ -1,45 +1,11 @@
+# ============ 复制运行区(在训练机上) ============
+# 重新解析 wandb reward(修了取列名的 bug)
 cd /opt/project/p/codes/flow_grpo_official
-ls -la wandb/ 2>/dev/null || echo "❌ 没有 wandb 目录(被清了)"
-ls -la debug/train.log 2>/dev/null || echo "❌ train.log 没了"
-ls -la logs/pickscore/sd3.5-M/ 2>/dev/null || echo "❌ checkpoint 没了"
-echo "--- 全盘找找 ---"
-find /opt -name "wandb-summary.json" 2>/dev/null | head
-find /opt -path "*pickscore*" -name "*.safetensors" 2>/dev/null | head
+git pull
+python debug/extract_wandb_reward.py
 
-
-(lt-env) root@cvplat-lt-test2-0:/opt/project/p/codes/flow_grpo_official# ls -la wandb/ 2>/dev/null || echo "❌ 没有 wandb 目录(被清了)"
- -la debug/train.log 2>/dev/null || echo "❌ train.log 没了"
-ls -la logs/pickscore/sd3.5-M/ 2>/dev/null || echo "❌ checkpoint 没了"
-echo "--- 全盘找找 ---"
-find /opt -name "wandb-summary.json" 2>/dev/null | head
-find /opt -path "*pickscore*" -name "*.safetensors" 2>/dev/null | headtotal 44
-drwxr-xr-x  5 root root 8192 Jun 14 18:25 .
-drwxr-xr-x 11 root root 8192 Jun 14 21:22 ..
-lrwxrwxrwx  1 root root   60 Jun 14 18:25 debug-internal.log -> offline-run-20260614_182540-re3leujt/logs/debug-internal.log
-lrwxrwxrwx  1 root root   51 Jun 14 18:25 debug.log -> offline-run-20260614_182540-re3leujt/logs/debug.log
-lrwxrwxrwx  1 root root   36 Jun 14 18:25 latest-run -> offline-run-20260614_182540-re3leujt
-drwxr-xr-x  5 root root 8192 Jun 13 21:48 offline-run-20260613_214836-zr0sgzct
-drwxr-xr-x  5 root root 8192 Jun 13 22:29 offline-run-20260613_222903-uqk97px5
-drwxr-xr-x  5 root root 8192 Jun 14 18:25 offline-run-20260614_182540-re3leujt
-(lt-env) root@cvplat-lt-test2-0:/opt/project/p/codes/flow_grpo_official# ls -la debug/train.log 2>/dev/null || echo "❌ train.log 没了"
--rw-r--r-- 1 root root 6677684 Jun 15 11:57 debug/train.log
-(lt-env) root@cvplat-lt-test2-0:/opt/project/p/codes/flow_grpo_official# ls -la logs/pickscore/sd3.5-M/ 2>/dev/null || echo "❌ checkpoint 没了"
-total 24
-drwxr-xr-x 3 root root 8192 Jun 14 21:22 .
-drwxr-xr-x 3 root root 8192 Jun 14 21:22 ..
-drwxr-xr-x 8 root root 8192 Jun 15 10:24 checkpoints
-(lt-env) root@cvplat-lt-test2-0:/opt/project/p/codes/flow_grpo_official# echo "--- 全盘找找 ---"
---- 全盘找找 ---
-(lt-env) root@cvplat-lt-test2-0:/opt/project/p/codes/flow_grpo_official# find /opt -name "wandb-summary.json" 2>/dev/null | head
-
-/opt/nas/p/bj-server/zx/zhouxue/PlanAgent/LLaMA-Factory/wandb/offline-run-20241022_155901-zihgtn0n/files/wandb-summary.json
-/opt/nas/p/bj-server/zx/zhouxue/PlanAgent/LLaMA-Factory/wandb/offline-run-20241022_155244-z6dbxi8o/files/wandb-summary.json
-/opt/nas/p/bj-server/zx/zhouxue/PlanAgent/wandb/offline-run-20250318_120150-g94t9vh1/files/wandb-summary.json
-/opt/nas/p/bj-server/zx/zhouxue/PlanAgent/wandb/offline-run-20250324_111408-xjpotn0w/files/wandb-summary.json
-/opt/nas/p/bj-server/zx/zhouxue/PlanAgent/wandb/offline-run-20250414_100828-o5dunf9p/files/wandb-summary.json
-/opt/nas/p/bj-server/zx/zhouxue/PlanAgent/wandb/offline-run-20250324_202345-g516d50p/files/wandb-summary.json
-/opt/nas/p/bj-server/zx/zhouxue/PlanAgent/wandb/offline-run-20250324_152227-gi86fffo/files/wandb-summary.json
-/opt/nas/p/bj-server/zx/zhouxue/PlanAgent/wandb/offline-run-20250325_162924-rpgbq5un/files/wandb-summary.json
-/opt/nas/p/bj-server/zx/zhouxue/PlanAgent/wandb/offline-run-20250311_100945-5u9emwvd/files/wandb-summary.json
-/opt/nas/p/bj-server/zx/zhouxue/PlanAgent/wandb/offline-run-20250506_215422-9bamvuqm/files/wandb-summary.json
-(lt-env) root@cvplat-lt-test2-0:/opt/project/p/codes/flow_grpo_official# find /opt -path "*pickscore*" -name "*.safetensors" 2>/dev/null | head
+# 把结果推给我看(csv + 脚本打印的样例记录)
+git add -f debug/wandb_reward.csv
+git commit -m "reward csv v2"
+git push
+# =================================================

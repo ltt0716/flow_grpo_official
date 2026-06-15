@@ -25,6 +25,7 @@ def parse_wandb_file(path):
     ds = datastore.DataStore()
     ds.open_for_scan(path)
     rows = []
+    dumped = False
     while True:
         data = ds.scan_data()
         if data is None:
@@ -32,12 +33,20 @@ def parse_wandb_file(path):
         rec = pb.Record()
         rec.ParseFromString(data)
         if rec.WhichOneof("record_type") == "history":
+            if not dumped:
+                # 打印一条原始 history 记录,确认字段结构(key vs nested_key)
+                print("=== 样例 history 记录(原始 proto)===")
+                print(str(rec.history)[:800])
+                print("=== /样例 ===")
+                dumped = True
             row = {}
             for item in rec.history.item:
+                # 列名:优先 key,空则用 nested_key 拼接
+                k = item.key or ".".join(item.nested_key) or "?"
                 try:
-                    row[item.key] = json.loads(item.value_json)
+                    row[k] = json.loads(item.value_json)
                 except Exception:
-                    row[item.key] = item.value_json
+                    row[k] = item.value_json
             rows.append(row)
     return rows
 
