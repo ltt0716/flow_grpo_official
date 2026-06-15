@@ -1,19 +1,25 @@
-# ============ 复制运行区(在训练机上)============
-# 从头训练:nohup 不断线 + 新日志(reward 进 stdout/metrics.jsonl)
+# ============ 复制运行区(平台提交作业 / 前台运行)============
+# 从头训练:保持前台(平台靠它保活,别用 nohup)+ git pull 拿新日志
+
+# 1. 进目录
 cd /opt/project/p/codes/flow_grpo_official
+
+# 2. 拉新代码(关键:才有 reward 打 stdout + metrics.jsonl 的新日志)
 git pull
 
-# (推荐)归档上次产物,保持新 run 数据干净(不删,留作已验证的 400-epoch 结果)
-mkdir -p old_run_backup
-mv logs   old_run_backup/ 2>/dev/null
-mv wandb  old_run_backup/ 2>/dev/null
-rm -f debug/metrics.jsonl
+# 3. (可选)归档旧产物,新 run 数据干净(保留已验证的 400-epoch 结果,不删)
+mkdir -p old_run_backup && mv logs wandb old_run_backup/ 2>/dev/null; rm -f debug/metrics.jsonl
 
-# 从头训练(默认配置=全新,不加载任何 checkpoint)
-bash scripts/launch_train.sh
+# 4. 环境变量
+export WANDB_MODE=offline
+export TOKENIZERS_PARALLELISM=false   # 消 tokenizer 警告刷屏
+export HF_HUB_OFFLINE=1               # 离线,防 HF 超时
+export TRANSFORMERS_OFFLINE=1
+mkdir -p debug
 
-# 看 reward 在刷(新日志直接打 stdout)
-tail -f debug/train.log | grep -E "metrics|epoch"
-
-# 停止训练: kill $(cat debug/train.pid)
-# ================================================
+# 5. 前台启动(和你原来一样,只是命令本身没变)
+accelerate launch --config_file scripts/accelerate_configs/multi_gpu.yaml \
+  --num_processes=4 --main_process_port 29501 \
+  scripts/train_sd3.py --config config/grpo.py:pickscore_sd3_4gpu \
+  2>&1 | tee debug/train.log
+# ============================================================
