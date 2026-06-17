@@ -413,12 +413,15 @@ def general_ocr_sd3_4gpu():
     return config
 
 def pickscore_sd3_7gpu():
-    # 7 卡(gpu0 被占时用其余 7 张):group size 调成 14,让 7*8=56 能被整除,
-    # 否则 GRPO 分组(num_image_per_prompt)会出现半个组、数学不干净。
+    # 7 卡 × 40G(gpu0 被占时用其余 7 张)。
+    # - 单卡 batch 降到 4(40G 上 batch=8 会 OOM;靠梯度累积补回,训练动态不变)
+    # - group size=14,让 7*4=28 能被整除(28/14=2 个完整组/批),GRPO 分组才干净
     # 启动需配合:CUDA_VISIBLE_DEVICES=<7张空闲卡>  --num_processes=7
     config = pickscore_sd3_4gpu()
     gpu_number = 7
-    config.sample.num_image_per_prompt = 14   # 56 / 14 = 4 个完整组/批
+    config.sample.train_batch_size = 4        # 40G 友好(原 8 会 OOM)
+    config.train.batch_size = 4
+    config.sample.num_image_per_prompt = 14   # 28 / 14 = 2 个完整组/批
     config.sample.num_batches_per_epoch = int(
         16 / (gpu_number * config.sample.train_batch_size / config.sample.num_image_per_prompt)
     )
@@ -442,10 +445,12 @@ def pickscore_sd3_7gpu_resume():
 
 
 def pickscore_sd3_8gpu():
-    # 8 卡:复用 4 卡配置,只按 gpu_number=8 重算 batch 数学。
-    # 每 epoch 总样本数不变(=256)、group size 不变 → 训练动态与 4 卡一致,吞吐约 2 倍。
+    # 8 卡 × 40G:单卡 batch 降到 4(40G 上 batch=8 会 OOM),group=16 不变(8*4=32, 32/16=2)。
+    # 每 epoch 总样本数仍 256、训练动态不变,只是多用梯度累积。
     config = pickscore_sd3_4gpu()
     gpu_number = 8
+    config.sample.train_batch_size = 4        # 40G 友好(原 8 会 OOM)
+    config.train.batch_size = 4
     config.sample.num_batches_per_epoch = int(
         16 / (gpu_number * config.sample.train_batch_size / config.sample.num_image_per_prompt)
     )

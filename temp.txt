@@ -1,7 +1,7 @@
-# ============ 复制运行区(7 卡 / gpu0 被占 / 平台前台)============
-# 用除 gpu0 外的 7 张卡;CUDA_VISIBLE_DEVICES 和 --num_processes 和配置名三者必须配套
+# ============ 复制运行区(7 卡 × 40G / gpu0 被占 / 平台前台)============
+# 已针对 40G 把单卡 batch 降到 4(原 8 会 OOM),训练动态不变(梯度累积补回)
 
-cd /opt/project/p/codes/flow_grpo_official
+cd /opt/project/p/codes/flow_grpo_official   # 注意:若你的代码在 /opt/nas/p/beijing_cv/longtao/flow_grpo_official,改成那个
 git pull
 
 # (可选)归档旧产物
@@ -11,20 +11,16 @@ export WANDB_MODE=offline
 export TOKENIZERS_PARALLELISM=false
 export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
-export CUDA_VISIBLE_DEVICES=1,2,3,4,5,6,7   # 排除被占的 gpu0;若占的是别张,改这里
+export CUDA_VISIBLE_DEVICES=1,2,3,4,5,6,7              # 排除被占的 gpu0
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True  # 抗显存碎片(报错里建议的)
 mkdir -p debug
 
-# --num_processes=7 ↔ 配置 :pickscore_sd3_7gpu(group size=14)必须配套
+# --num_processes=7 ↔ :pickscore_sd3_7gpu(已是 batch=4 的 40G 版)
 accelerate launch --config_file scripts/accelerate_configs/multi_gpu.yaml \
   --num_processes=7 --main_process_port 29501 \
   scripts/train_sd3.py --config config/grpo.py:pickscore_sd3_7gpu \
   2>&1 | tee debug/train.log
 
+# 若仍 OOM:把 config 里 7gpu 的 train_batch_size 再降到 2(告诉我我改),或开梯度检查点
 # 被杀后接力: --config config/grpo.py:pickscore_sd3_7gpu_resume
-
-# ----- 备选:不想折腾就用 4 张卡(零新配置,最稳)-----
-# export CUDA_VISIBLE_DEVICES=1,2,3,4
-# accelerate launch --config_file scripts/accelerate_configs/multi_gpu.yaml \
-#   --num_processes=4 --main_process_port 29501 \
-#   scripts/train_sd3.py --config config/grpo.py:pickscore_sd3_4gpu 2>&1 | tee debug/train.log
 # ==================================================================
