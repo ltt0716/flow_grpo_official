@@ -1,148 +1,36 @@
-# ============ 复制运行区(7 卡 × 40G / gpu0 被占 / 平台前台)============
-# 已针对 40G 把单卡 batch 降到 4(原 8 会 OOM),训练动态不变(梯度累积补回)
+# ============ 新机器 8卡×80G:从零开始 ============
 
-cd /opt/project/p/codes/flow_grpo_official   # 注意:若你的代码在 /opt/nas/p/beijing_cv/longtao/flow_grpo_official,改成那个
-git pull
+# --- 1. clone 代码(选个目录,持久盘优先,如 /opt/nas/... 或 /opt/project/...) ---
+cd /opt/nas/p/longtao        # 改成你这台机器的工作目录
+git clone https://github.com/ltt0716/flow_grpo_official.git
+cd flow_grpo_official
 
-# (可选)归档旧产物
-mkdir -p old_run_backup && mv logs wandb old_run_backup/ 2>/dev/null; rm -f debug/metrics.jsonl
+# --- 2. 装环境 ---
+conda activate lt-env        # 平台若已自动激活就跳过
+# torch+xformers 从 cu121 一起装(防 xformers 顶掉 torch)
+pip install torch==2.6.0 torchvision==0.21.0 xformers==0.0.29.post3 --index-url https://download.pytorch.org/whl/cu121
+pip install -e .
 
+# --- 3. 起飞前检查(代码/模型路径/GPU 一次看清) ---
+bash debug/preflight.sh
+#  ✅ 模型齐 + 卡数=8 → 直接下一步
+#  ❌ 模型缺(新机器 /opt/nas 挂载不同)→ 跑下面这行下载,再改 config 路径(告诉我):
+#     pip install modelscope && bash scripts/download_models_modelscope.sh
+
+# --- 4. 启动 8 卡训练(80G,batch=8) ---
 export WANDB_MODE=offline
 export TOKENIZERS_PARALLELISM=false
 export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
-export CUDA_VISIBLE_DEVICES=1,2,3,4,5,6,7              # 排除被占的 gpu0
-export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True  # 抗显存碎片(报错里建议的)
 mkdir -p debug
 
-# --num_processes=7 ↔ :pickscore_sd3_7gpu(已是 batch=4 的 40G 版)
 accelerate launch --config_file scripts/accelerate_configs/multi_gpu.yaml \
-  --num_processes=7 --main_process_port 29501 \
-  scripts/train_sd3.py --config config/grpo.py:pickscore_sd3_7gpu \
+  --num_processes=8 --main_process_port 29501 \
+  scripts/train_sd3.py --config config/grpo.py:pickscore_sd3_8gpu \
   2>&1 | tee debug/train.log
 
-# 若仍 OOM:把 config 里 7gpu 的 train_batch_size 再降到 2(告诉我我改),或开梯度检查点
-# 被杀后接力: --config config/grpo.py:pickscore_sd3_7gpu_resume
-# ==================================================================
-
-
-[rank5]: torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 58.00 MiB. GPU 5 has a total capacity of 44.53 GiB of which 3.94 MiB is free. Process 1189709 has 44.52 GiB memory in use. Of the allocated memory 43.38 GiB is allocated by PyTorch, and 630.89 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
-[rank0]: Traceback (most recent call last):
-[rank0]:   File "/opt/nas/p/beijing_cv/longtao/flow_grpo_official/scripts/train_sd3.py", line 975, in <module>
-[rank0]:     app.run(main)
-[rank0]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/absl/app.py", line 367, in run
-[rank0]:     _run_main(main, args)
-[rank0]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/absl/app.py", line 312, in _run_main
-[rank0]:     sys.exit(main(argv))
-[rank0]:              ^^^^^^^^^^
-[rank0]:   File "/opt/nas/p/beijing_cv/longtao/flow_grpo_official/scripts/train_sd3.py", line 887, in main
-[rank0]:     prev_sample, log_prob, prev_sample_mean, std_dev_t = compute_log_prob(transformer, pipeline, sample, j, embeds, pooled_embeds, config)
-[rank0]:                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:   File "/opt/nas/p/beijing_cv/longtao/flow_grpo_official/scripts/train_sd3.py", line 183, in compute_log_prob
-[rank0]:     noise_pred = transformer(
-[rank0]:                  ^^^^^^^^^^^^
-[rank0]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
-[rank0]:     return self._call_impl(*args, **kwargs)
-[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
-[rank0]:     return forward_call(*args, **kwargs)
-[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/torch/nn/parallel/distributed.py", line 1643, in forward
-[rank0]:     else self._run_ddp_forward(*inputs, **kwargs)
-[rank0]:          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/torch/nn/parallel/distributed.py", line 1459, in _run_ddp_forward
-[rank0]:     return self.module(*inputs, **kwargs)  # type: ignore[index]
-[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
-[rank0]:     return self._call_impl(*args, **kwargs)
-[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
-[rank0]:     return forward_call(*args, **kwargs)
-[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/accelerate/utils/operations.py", line 819, in forward
-[rank0]:     return model_forward(*args, **kwargs)
-[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/accelerate/utils/operations.py", line 807, in __call__
-[rank0]:     return convert_to_fp32(self.model_forward(*args, **kwargs))
-[rank0]:                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/torch/amp/autocast_mode.py", line 44, in decorate_autocast
-[rank0]:     return func(*args, **kwargs)
-[rank0]:            ^^^^^^^^^^^^^^^^^^^^^
-[rank0]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/peft/peft_model.py", line 563, in forward
-[rank0]:     return self.get_base_model()(*args, **kwargs)
-[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
-[rank0]:     return self._call_impl(*args, **kwargs)
-[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
-[rank0]:     return forward_call(*args, **kwargs)
-[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/diffusers/models/transformers/transformer_sd3.py", line 396, in forward
-[rank0]:     encoder_hidden_states, hidden_states = block(
-[rank0]:                                            ^^^^^^
-[rank0]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
-[rank0]:     return self._call_impl(*args, **kwargs)
-[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
-[rank0]:     return forward_call(*args, **kwargs)
-[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/diffusers/models/attention.py", line 213, in forward
-[rank0]:     attn_output, context_attn_output = self.attn(
-[rank0]:                                        ^^^^^^^^^^
-[rank0]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
-[rank0]:     return self._call_impl(*args, **kwargs)
-[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
-[rank0]:     return forward_call(*args, **kwargs)
-[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/diffusers/models/attention_processor.py", line 605, in forward
-[rank0]:     return self.processor(
-[rank0]:            ^^^^^^^^^^^^^^^
-[rank0]:   File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/diffusers/models/attention_processor.py", line 1482, in __call__
-[rank0]:     hidden_states = F.scaled_dot_product_attention(query, key, value, dropout_p=0.0, is_causal=False)
-[rank0]:                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-[rank0]: torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 58.00 MiB. GPU 0 has a total capacity of 44.53 GiB of which 5.94 MiB is free. Process 1189701 has 44.52 GiB memory in use. Of the allocated memory 43.37 GiB is allocated by PyTorch, and 632.08 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
-[1;34mwandb[0m:
-[1;34mwandb[0m: You can sync this run to the cloud by running:
-[1;34mwandb[0m: [1mwandb sync /opt/nas/p/beijing_cv/longtao/flow_grpo_official/wandb/offline-run-20260617_110948-gbf9ivc9[0m
-[1;34mwandb[0m: Find logs at: [1;35mwandb/offline-run-20260617_110948-gbf9ivc9/logs[0m
-W0617 11:32:28.525000 1290634 site-packages/torch/distributed/elastic/multiprocessing/api.py:897] Sending process 1291459 closing signal SIGTERM
-W0617 11:32:28.558000 1290634 site-packages/torch/distributed/elastic/multiprocessing/api.py:897] Sending process 1291462 closing signal SIGTERM
-W0617 11:32:28.559000 1290634 site-packages/torch/distributed/elastic/multiprocessing/api.py:897] Sending process 1291464 closing signal SIGTERM
-W0617 11:32:28.559000 1290634 site-packages/torch/distributed/elastic/multiprocessing/api.py:897] Sending process 1291465 closing signal SIGTERM
-W0617 11:32:28.560000 1290634 site-packages/torch/distributed/elastic/multiprocessing/api.py:897] Sending process 1291466 closing signal SIGTERM
-W0617 11:32:28.560000 1290634 site-packages/torch/distributed/elastic/multiprocessing/api.py:897] Sending process 1291467 closing signal SIGTERM
-E0617 11:32:31.330000 1290634 site-packages/torch/distributed/elastic/multiprocessing/api.py:869] failed (exitcode: 1) local_rank: 0 (pid: 1291458) of binary: /opt/nas/p/conda/envs/lt-env/bin/python3.12
-Traceback (most recent call last):
-  File "/opt/nas/p/conda/envs/lt-env/bin/accelerate", line 6, in <module>
-    sys.exit(main())
-             ^^^^^^
-  File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/accelerate/commands/accelerate_cli.py", line 48, in main
-    args.func(args)
-  File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/accelerate/commands/launch.py", line 1190, in launch_command
-    multi_gpu_launcher(args)
-  File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/accelerate/commands/launch.py", line 808, in multi_gpu_launcher
-    distrib_run.run(args)
-  File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/torch/distributed/run.py", line 909, in run
-    elastic_launch(
-  File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 138, in __call__
-    return launch_agent(self._config, self._entrypoint, list(args))
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/nas/p/conda/envs/lt-env/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 269, in launch_agent
-    raise ChildFailedError(
-torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
-============================================================
-scripts/train_sd3.py FAILED
-------------------------------------------------------------
-Failures:
-  <NO_OTHER_FAILURES>
-------------------------------------------------------------
-Root Cause (first observed failure):
-[0]:
-  time      : 2026-06-17_11:32:28
-  host      : VM-68-92-tencentos
-  rank      : 0 (local_rank: 0)
-  exitcode  : 1 (pid: 1291458)
-  error_file: <N/A>
-  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
-============================================================
+# --- 监控 ---
+# 另开终端: tail -f debug/train.log | grep metrics
+# 被平台杀掉后接力: --config config/grpo.py:pickscore_sd3_8gpu_resume
+# 出报错: bash debug/report_error.sh
+# =================================================

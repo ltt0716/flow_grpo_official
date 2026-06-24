@@ -445,12 +445,10 @@ def pickscore_sd3_7gpu_resume():
 
 
 def pickscore_sd3_8gpu():
-    # 8 卡 × 40G:单卡 batch 降到 4(40G 上 batch=8 会 OOM),group=16 不变(8*4=32, 32/16=2)。
-    # 每 epoch 总样本数仍 256、训练动态不变,只是多用梯度累积。
-    config = pickscore_sd3_4gpu()
+    # 8 卡 × 80G:用原始 batch=8(80G 放得下,吞吐高),group=16(8*8=64, 64/16=4 个完整组)。
+    # 每 epoch 256 样本。若卡只有 40G 会 OOM,那种情况用 7gpu 版(batch=4)或自行把 batch 降到 4。
+    config = pickscore_sd3_4gpu()   # 继承 batch=8
     gpu_number = 8
-    config.sample.train_batch_size = 4        # 40G 友好(原 8 会 OOM)
-    config.train.batch_size = 4
     config.sample.num_batches_per_epoch = int(
         16 / (gpu_number * config.sample.train_batch_size / config.sample.num_image_per_prompt)
     )
