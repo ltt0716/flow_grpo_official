@@ -1,29 +1,32 @@
-# ============ 新机器 8卡×80G:从零开始 ============
+# ============ 新机器 8卡×80G:从零开始(含建 conda 环境)============
 
-# --- 1. clone 代码(选个目录,持久盘优先,如 /opt/nas/... 或 /opt/project/...) ---
-cd /opt/nas/p/longtao        # 改成你这台机器的工作目录
+# --- 1. clone 代码(选持久盘目录) ---
+cd /opt/nas/p/longtao            # 改成你这台机器的工作目录
 git clone https://github.com/ltt0716/flow_grpo_official.git
 cd flow_grpo_official
 
-# --- 2. 装环境 ---
-conda activate lt-env        # 平台若已自动激活就跳过
+# --- 2. 新建并激活 conda 环境(用 3.12,和之前跑通的一致) ---
+conda create -n lt-env python=3.12 -y
+conda activate lt-env
+
+# --- 3. 装依赖 ---
 # torch+xformers 从 cu121 一起装(防 xformers 顶掉 torch)
 pip install torch==2.6.0 torchvision==0.21.0 xformers==0.0.29.post3 --index-url https://download.pytorch.org/whl/cu121
+# 仓库本体(会装 diffusers/transformers/peft/accelerate/deepspeed 等)
 pip install -e .
+#   deepspeed 装不上可忽略(4卡DDP用不到):pip install -e . 报 deepspeed 错就先 pip install -e . --no-deps 再补装缺的
 
-# --- 3. 起飞前检查(代码/模型路径/GPU 一次看清) ---
+# --- 4. 验证环境 ---
+python -c "import torch; print(torch.__version__, torch.version.cuda, torch.cuda.is_available(), torch.cuda.device_count())"
+#   期望: 2.6.0 12.1 True 8
+
+# --- 5. 起飞前检查(代码/模型路径/GPU) ---
 bash debug/preflight.sh
-#  ✅ 模型齐 + 卡数=8 → 直接下一步
-#  ❌ 模型缺(新机器 /opt/nas 挂载不同)→ 跑下面这行下载,再改 config 路径(告诉我):
-#     pip install modelscope && bash scripts/download_models_modelscope.sh
+#   模型缺(新机器 /opt/nas 挂载不同)→ pip install modelscope && bash scripts/download_models_modelscope.sh
 
-# --- 4. 启动 8 卡训练(80G,batch=8) ---
-export WANDB_MODE=offline
-export TOKENIZERS_PARALLELISM=false
-export HF_HUB_OFFLINE=1
-export TRANSFORMERS_OFFLINE=1
+# --- 6. 启动 8 卡训练(80G,batch=8) ---
+export WANDB_MODE=offline TOKENIZERS_PARALLELISM=false HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
 mkdir -p debug
-
 accelerate launch --config_file scripts/accelerate_configs/multi_gpu.yaml \
   --num_processes=8 --main_process_port 29501 \
   scripts/train_sd3.py --config config/grpo.py:pickscore_sd3_8gpu \
@@ -33,4 +36,4 @@ accelerate launch --config_file scripts/accelerate_configs/multi_gpu.yaml \
 # 另开终端: tail -f debug/train.log | grep metrics
 # 被平台杀掉后接力: --config config/grpo.py:pickscore_sd3_8gpu_resume
 # 出报错: bash debug/report_error.sh
-# =================================================
+# ==================================================================
