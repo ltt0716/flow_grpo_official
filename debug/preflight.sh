@@ -12,10 +12,11 @@ git pull --ff-only 2>&1 | tail -1
 echo "当前提交: $(git log --oneline -1)"
 
 echo ""
-echo "## 3) 模型路径(config 里写死的 /opt/nas/p/longtao/models)"
+MODELS_DIR="${FLOW_GRPO_MODELS_DIR:-/opt/nas/p/longtao/models}"
+echo "## 3) 模型路径(MODELS_DIR=$MODELS_DIR;可用 FLOW_GRPO_MODELS_DIR 覆盖)"
 ALLOK=1
 for d in stable-diffusion-3.5-medium PickScore_v1 CLIP-ViT-H-14-laion2B-s32B-b79K; do
-    p="/opt/nas/p/longtao/models/$d"
+    p="$MODELS_DIR/$d"
     if [ -d "$p" ] && [ -n "$(ls -A "$p" 2>/dev/null)" ]; then
         echo "✅ $p"
     else
