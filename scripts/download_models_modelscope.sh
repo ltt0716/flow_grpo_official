@@ -12,8 +12,9 @@
 # ============================================================================
 set -uo pipefail
 
-# === 已经修改为你集群的专属持久盘路径 ===
-MODELS_DIR="${MODELS_DIR:-/opt/nas/p/longtao/models}"
+# 下载目标目录:和训练读取用同一个环境变量 FLOW_GRPO_MODELS_DIR(下哪、训练就从哪读)。
+# 优先 FLOW_GRPO_MODELS_DIR > 旧的 MODELS_DIR > 默认。
+MODELS_DIR="${FLOW_GRPO_MODELS_DIR:-${MODELS_DIR:-/opt/nas/p/longtao/models}}"
 mkdir -p "$MODELS_DIR"
 echo "==> 模型将下到: $MODELS_DIR"
 
@@ -27,7 +28,7 @@ dl () {  # dl <modelscope_id> <目标子目录>
 
 # 1) SD3.5-medium —— 已确认在 modelscope(主模型,~20G)
 dl "AI-ModelScope/stable-diffusion-3.5-medium"            "stable-diffusion-3.5-medium"
-miasnmian
+# 2) PickScore_v1 —— reward 模型(~4G)
 dl "AI-ModelScope/PickScore_v1"                            "PickScore_v1"
 
 # 3) CLIP-ViT-H —— PickScore 的处理器。候选 ID,若 404 见兜底。
