@@ -26,6 +26,9 @@ bash debug/preflight.sh
 
 # --- 6. 启动 8 卡训练(80G,batch=8) ---
 export WANDB_MODE=offline TOKENIZERS_PARALLELISM=false HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+# 路径可配(不设则用默认 /opt/nas/p/longtao/models 和 logs/):
+# export FLOW_GRPO_MODELS_DIR=/这台机器的模型目录     # 三个模型都在这
+# export FLOW_GRPO_OUTPUT_DIR=/opt/nas/p/longtao/runs # checkpoint 存持久盘,防 pod 迁移丢
 mkdir -p debug
 accelerate launch --config_file scripts/accelerate_configs/multi_gpu.yaml \
   --num_processes=8 --main_process_port 29501 \

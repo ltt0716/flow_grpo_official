@@ -5,9 +5,10 @@ import torch
 class PickScoreScorer(torch.nn.Module):
     def __init__(self, device="cuda", dtype=torch.float32):
         super().__init__()
-        # 指向 NAS 本地路径(训练机连不上 HF,见 RUNBOOK 方案 C)
-        processor_path = "/opt/nas/p/longtao/models/CLIP-ViT-H-14-laion2B-s32B-b79K"
-        model_path = "/opt/nas/p/longtao/models/PickScore_v1"
+        # 路径从 flow_grpo.paths 读(支持环境变量覆盖,默认指向本地 NAS)
+        from flow_grpo.paths import CLIPH_PATH, PICKSCORE_PATH
+        processor_path = CLIPH_PATH
+        model_path = PICKSCORE_PATH
         self.device = device
         self.dtype = dtype
         self.processor = CLIPProcessor.from_pretrained(processor_path)

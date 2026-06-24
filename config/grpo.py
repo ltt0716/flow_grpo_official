@@ -2,6 +2,8 @@ import ml_collections
 import importlib.util
 import os
 
+from flow_grpo.paths import SD35_PATH, OUTPUT_DIR  # 路径集中管理,支持环境变量覆盖
+
 
 def _load_source(name, path):
     # Python 3.12 移除了 imp 模块,用 importlib 等价替换 imp.load_source
@@ -492,8 +494,8 @@ def pickscore_sd3_4gpu():
     config = compressibility()
     config.dataset = os.path.join(os.getcwd(), "dataset/pickscore")
 
-    # sd3.5 medium —— 指向 NAS 本地路径(训练机连不上 HF,见 RUNBOOK 方案 C)
-    config.pretrained.model = "/opt/nas/p/longtao/models/stable-diffusion-3.5-medium"
+    # sd3.5 medium —— 路径从 flow_grpo.paths 读(支持环境变量覆盖,默认指向本地 NAS)
+    config.pretrained.model = SD35_PATH
     config.sample.num_steps = 10
     config.sample.eval_num_steps = 40
     config.sample.guidance_scale = 4.5
@@ -515,7 +517,7 @@ def pickscore_sd3_4gpu():
     config.train.ema = True
     config.save_freq = 60 # epoch
     config.eval_freq = 60
-    config.save_dir = 'logs/pickscore/sd3.5-M'
+    config.save_dir = os.path.join(OUTPUT_DIR, 'pickscore/sd3.5-M')  # 可用 FLOW_GRPO_OUTPUT_DIR 指向持久盘
     config.reward_fn = {
         "pickscore": 1.0,
     }
